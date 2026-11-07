@@ -1,10 +1,11 @@
-##Segundo Parcial 2L C3-2026. 
-#Monitor de señal analógica con alarma configurable
--Firmware con GPIO, TIMER, UART y ADC.
+# Segundo Parcial 2L C3-2026:
+Monitor de señal analógica con alarma configurable
 
-Mario Miguel, 2019-8253
-Placa a utilizar FRDM-MCXA156
-Herramienta y version que se usran: MCUXpresso IDE v25.6.136, SDK v25.6.136
+Firmware con GPIO, TIMER, UART y ADC.
+
+- **Nombre y matrícula:** Mario Miguel, 2019-8253
+- **Placa:** FRDM-MCXA156 (MCXA156VLL)
+- **Herramientas y versiones:** MCUXpresso IDE v25.6.136, SDK v25.6.136
 
 ## Mapa de pines
 Ver `Documentos/mapa_pines.md`.
