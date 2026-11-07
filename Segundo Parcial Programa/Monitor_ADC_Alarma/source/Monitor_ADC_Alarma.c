@@ -1,50 +1,31 @@
-/*
- * Copyright 2016-2026 NXP
- * All rights reserved.
- *
- * SPDX-License-Identifier: BSD-3-Clause
- */
-
-/**
- * @file    Monitor_ADC_Alarma.c
- * @brief   Application entry point.
- */
-#include <stdio.h>
 #include "board.h"
 #include "peripherals.h"
 #include "pin_mux.h"
 #include "clock_config.h"
 #include "fsl_debug_console.h"
-#include "app_time.h"
 #include "app_config.h"
-/* TODO: insert other include files here. */
+#include "app_time.h"
+#include "uart_app.h"
 
-/* TODO: insert other definitions and declarations here. */
-
-/*
- * @brief   Application entry point.
- */
-int main(void) {
-
-    /* Init board hardware. */
+int main(void)
+{
     BOARD_InitBootPins();
     BOARD_InitBootClocks();
     BOARD_InitBootPeripherals();
-#ifndef BOARD_INIT_DEBUG_CONSOLE_PERIPHERAL
-    /* Init FSL debug console. */
-    BOARD_InitDebugConsole();
-#endif
+    BOARD_InitDebugConsole();            /* solo deja pines y velocidad de la LPUART */
 
-    PRINTF("Hello World\r\n");
+    Uart_Init();                         /* RX por interrupcion + TX encolado */
+    Uart_Puts("\r\nPaso 4: UART OK. Escriba algo.\r\n");
 
-    /* Force the counter to be placed into memory. */
-    volatile static int i = 0 ;
-    /* Enter an infinite loop, just incrementing a counter. */
-    while(1) {
-        i++ ;
-        /* 'Dummy' NOP to allow source level single stepping of
-            tight while() loop */
-        __asm volatile ("nop");
+    for (;;)
+    {
+        uint8_t b;
+
+        while (Uart_ReadByte(&b))        /* eco de lo recibido */
+        {
+            char s[2] = { (char)b, '\0' };
+            Uart_Puts(s);
+        }
+        Uart_TxService();                /* vaciar cola TX sin bloquear */
     }
-    return 0 ;
 }
