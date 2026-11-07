@@ -31,7 +31,12 @@ Ver `Documentos/mapa_pines.md`.
 conexion de 115200 baudios, a 8 bits, sin paridad, de 1 bit de parada, sin control de flujo.
 
 ## Cálculo del TIMER
-Reloj efectivo: [pendiente] | Prescaler: [pendiente] | Período: [pendiente]
+- Periférico: CTIMER0, coincidencia (match) 0 con reinicio del contador e interrupción.
+- Reloj efectivo: 96 MHz (FRO_HF con divisor 1), leído en ejecución con CLOCK_GetCTimerClkFreq y mostrado por la UART al arrancar.
+- Prescaler: 0.
+- Período de 1 ms: 96 000 000 Hz / 1000 = 96 000 ciclos. Valor del registro de coincidencia: 96 000 − 1 = 95 999, porque con reinicio en la coincidencia el período es MR + 1.
+- La interrupción solo incrementa un contador de milisegundos. De ese tick salen las tareas periódicas: muestra del ADC cada 100 ms, LED de actividad cada 500 ms y telemetría cada 1000 ms.
+- Las diferencias de tiempo se calculan con enteros sin signo, así que resisten el desbordamiento del contador.
 
 ## Compilación y ejecución
 1. Abrir el proyecto en MCUXpresso IDE.
