@@ -4,14 +4,19 @@
 #include "board.h"
 #include "fsl_device_registers.h"
 
-/* ===== LEDs (RGB integrado). Los pines salen de board.h ===== */
-#define APP_LED_ACT_GPIO      BOARD_LED_GREEN_GPIO
-#define APP_LED_ACT_PIN       BOARD_LED_GREEN_GPIO_PIN
-#define APP_LED_ALM_GPIO      BOARD_LED_RED_GPIO
-#define APP_LED_ALM_PIN       BOARD_LED_RED_GPIO_PIN
-#define APP_LED_PORT          PORT3
-#define APP_LED_ON_LEVEL      LOGIC_LED_ON
-#define APP_LED_OFF_LEVEL     LOGIC_LED_OFF
+/* ===== LED de actividad: LED externo en P2_5 (Arduino A1, J4 pin 4), activo en alto ===== */
+#define APP_LED_ACT_GPIO       GPIO2
+#define APP_LED_ACT_PORT       PORT2
+#define APP_LED_ACT_PIN        5U
+#define APP_LED_ACT_ON_LEVEL   1U
+#define APP_LED_ACT_OFF_LEVEL  0U
+
+/* ===== LED de alarma: rojo del RGB integrado (P3_12), activo en bajo. Pines de board.h ===== */
+#define APP_LED_ALM_GPIO       BOARD_LED_RED_GPIO
+#define APP_LED_ALM_PORT       PORT3
+#define APP_LED_ALM_PIN        BOARD_LED_RED_GPIO_PIN
+#define APP_LED_ALM_ON_LEVEL   LOGIC_LED_ON
+#define APP_LED_ALM_OFF_LEVEL  LOGIC_LED_OFF
 
 /* ===== Pulsador SW2: activo en bajo, pull-up ===== */
 #define APP_BTN_GPIO          GPIO1
