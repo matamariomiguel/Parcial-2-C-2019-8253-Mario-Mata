@@ -7,7 +7,7 @@ Placa a utilizar FRDM-MCXA156
 Herramienta y version que se usran: MCUXpresso IDE v25.6.136, SDK v25.6.136
 
 ## Mapa de pines
-Ver `DOCUMENTOS/mapa_pines.md`.
+Ver `Documentos/mapa_pines.md`.
 
 ## Esquema de conexiones
 [pendiente]
