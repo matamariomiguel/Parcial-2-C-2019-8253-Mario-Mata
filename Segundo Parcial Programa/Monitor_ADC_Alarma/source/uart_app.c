@@ -1,7 +1,9 @@
 #include "uart_app.h"
 #include "app_config.h"
+#include "board.h"
 #include "fsl_lpuart.h"
 #include "fsl_common.h"
+#include "fsl_clock.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -17,15 +19,18 @@ static volatile uint32_t s_rxTail = 0U;   /* escribe main   */
 static volatile uint32_t s_rxLostFlag = 0U;
 static volatile uint32_t s_rxLost = 0U;
 static volatile uint32_t s_rxOverrun = 0U;
+static volatile uint32_t s_isrCount = 0U;
+
 static uint8_t  s_tx[TX_SIZE];            /* solo se toca desde main */
 static uint32_t s_txHead = 0U;
 static uint32_t s_txTail = 0U;
 static uint32_t s_txDrop = 0U;
 
-
 /* ISR: solo recibe, limpia errores y guarda en el buffer circular */
 void APP_UART_IRQHandler(void)
 {
+    s_isrCount++;
+
     uint32_t flags = LPUART_GetStatusFlags(APP_UART);
     uint32_t err = flags & (kLPUART_RxOverrunFlag | kLPUART_NoiseErrorFlag |
                             kLPUART_FramingErrorFlag | kLPUART_ParityErrorFlag);
@@ -59,6 +64,19 @@ void APP_UART_IRQHandler(void)
 
 void Uart_Init(void)
 {
+    lpuart_config_t cfg;
+
+    /* Pin RX (P0_2, LPUART0_RXD): funcion alterna 2, pull-up, buffer de entrada */
+    CLOCK_EnableClock(kCLOCK_GatePORT0);
+    PORT0->PCR[2] = PORT_PCR_MUX(2U) | PORT_PCR_PE_MASK | PORT_PCR_PS_MASK | PORT_PCR_IBE_MASK;
+
+    /* Configuracion completa de la LPUART0, sobrescribe lo que dejo la consola del SDK */
+    LPUART_GetDefaultConfig(&cfg);
+    cfg.baudRate_Bps = BOARD_DEBUG_UART_BAUDRATE;
+    cfg.enableTx     = true;
+    cfg.enableRx     = true;
+    (void)LPUART_Init(APP_UART, &cfg, BOARD_DEBUG_UART_CLK_FREQ);
+
     s_rxHead = s_rxTail = 0U;
     LPUART_ClearStatusFlags(APP_UART, kLPUART_RxOverrunFlag | kLPUART_NoiseErrorFlag |
                                       kLPUART_FramingErrorFlag | kLPUART_ParityErrorFlag);
@@ -132,3 +150,4 @@ void Uart_TxService(void)
 }
 
 uint32_t Uart_TxDropCount(void) { return s_txDrop; }
+uint32_t Uart_IsrCount(void)    { return s_isrCount; }

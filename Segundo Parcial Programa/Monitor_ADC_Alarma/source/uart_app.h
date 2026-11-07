@@ -15,5 +15,6 @@ void     Uart_Puts(const char *s);       /* encola; si no cabe, descarta y cuent
 void     Uart_Printf(const char *fmt, ...);
 void     Uart_TxService(void);           /* vacia la cola sin bloquear (llamar en main) */
 uint32_t Uart_TxDropCount(void);
+uint32_t Uart_IsrCount(void);
 
 #endif
