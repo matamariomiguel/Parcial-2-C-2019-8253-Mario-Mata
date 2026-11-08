@@ -58,7 +58,7 @@ bool Adc_Service(uint32_t nowMs)
         s_pending = true;
     }
 
-    if (s_pending && LPADC_GetConvResult(APP_ADC_BASE, &r, 0U))
+    if (s_pending && LPADC_GetConvResult(APP_ADC_BASE, &r))
     {
         uint32_t v = ((uint32_t)r.convValue >> APP_ADC_RESULT_SHIFT) & APP_ADC_MAX;
         s_raw     = (uint16_t)v;
