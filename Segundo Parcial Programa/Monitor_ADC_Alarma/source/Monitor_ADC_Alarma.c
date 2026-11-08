@@ -10,11 +10,22 @@
 #include "tick_app.h"
 #include "led_app.h"
 #include "button_app.h"
+#include "adc_app.h"
+#include "alarm_app.h"
+
+static void SendStatus(uint32_t now)
+{
+    Uart_Printf("t=%lu;ADC=%u;PCT=%u;THR=%u;MODE=%s;ALARM=%u\r\n",
+                (unsigned long)now,
+                (unsigned)Adc_GetRaw(),
+                (unsigned)Adc_RawToPct(Adc_GetRaw()),
+                (unsigned)Alarm_GetThr(),
+                Alarm_IsRun() ? "RUN" : "PAUSE",
+                Alarm_IsOn() ? 1U : 0U);
+}
 
 int main(void)
 {
-    bool run = true;                       /* arranca en RUN */
-
     BOARD_InitBootPins();
     BOARD_InitBootClocks();
     BOARD_InitBootPeripherals();
@@ -22,10 +33,15 @@ int main(void)
 
     Uart_Init();
     (void)Tick_Init();
-    Led_Init(Tick_GetMs());
-    Button_Init(Tick_GetMs());
 
-    Uart_Puts("\r\nETAPA 7: boton SW2 alterna RUN/PAUSE. '1'/'0' = alarma ON/OFF\r\n");
+    uint32_t t0 = Tick_GetMs();
+    Led_Init(t0);
+    Button_Init(t0);
+    Adc_Init(t0);
+    Alarm_Init();
+
+    uint32_t lastTelem = t0;
+    Uart_Puts("\r\nETAPA 8-9: ADC + alarma. SW2=RUN/PAUSE, 'u'/'d' = THR +5/-5\r\n");
 
     for (;;)
     {
@@ -34,20 +50,26 @@ int main(void)
 
         Led_ActivityService(now);
 
+        if (Adc_Service(now))
+        {
+            Alarm_OnSample(Adc_RawToPct(Adc_GetRaw()));
+        }
+
         if (Button_Service(now))
         {
-            run = !run;
-            if (!run)
-            {
-                Led_SetAlarm(false);       /* en PAUSE la alarma queda apagada */
-            }
-            Uart_Printf("t=%lu SW2 -> %s\r\n", (unsigned long)now, run ? "RUN" : "PAUSE");
+            Alarm_SetRun(!Alarm_IsRun());
         }
 
         while (Uart_ReadByte(&b))
         {
-            if (b == '1')      { Led_SetAlarm(true);  Uart_Puts("ALARMA ON\r\n"); }
-            else if (b == '0') { Led_SetAlarm(false); Uart_Puts("ALARMA OFF\r\n"); }
+            uint8_t thr = Alarm_GetThr();
+            if ((b == 'u') && (thr + 5U <= APP_THR_MAX)) { Alarm_SetThr((uint8_t)(thr + 5U)); }
+            if ((b == 'd') && (thr >= APP_THR_MIN + 5U)) { Alarm_SetThr((uint8_t)(thr - 5U)); }
+        }
+
+        if (Time_Due(now, &lastTelem, APP_TELEMETRY_PERIOD_MS))
+        {
+            SendStatus(now);
         }
         Uart_TxService();
     }
