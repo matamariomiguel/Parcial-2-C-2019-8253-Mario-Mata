@@ -1,2 +1,28 @@
 Maestro aqui le ajunto lo que son los avnaces del programa desde el programa de prueba hasta el resultado final del programa.
 
+Aqui tambien le dejo lo que seria una breve explicacion de cada uno de los progrmas
+
+(Principal) Monitor_ADC_Alarma.c: inicializa el sistema y ejecuta las tareas principales.
+
+app_config.h: centraliza pines, tiempos, umbrales y configuraciones.
+
+app_time.h: controla los tiempos sin bloqueos ni errores por desbordamiento.
+
+tick_app.c/.h: genera una interrupción cada 1 ms y actualiza el contador de tiempo.
+
+led_app.c/.h: controla el LED de actividad y el LED de alarma.
+
+button_app.c/.h: detecta pulsaciones con antirrebote.
+
+adc_app.c/.h: lee y procesa el valor del ADC cada 100 ms.
+
+alarm_app.c/.h: administra los modos RUN/PAUSE y las condiciones de alarma.
+
+uart_app.c/.h: gestiona la comunicación UART para recibir y enviar datos.
+
+cmd_app.c/.h: interpreta comandos UART y genera respuestas y telemetría.
+
+diag_app.c/.h: mide los períodos de ejecución de las tareas para diagnóstico.
+
+semihost_hardfault.c: evita bloqueos por semihosting cuando no hay depurador.
+

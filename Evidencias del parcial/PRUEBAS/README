@@ -11,12 +11,11 @@ Con el caso de la prueba P03
 
 Se le abjunto fotos fotos de la medición del LED externo y el potenciometro. Cada medicion se uso un multimetro como heramienta para medir la tension de cada compoente usado para esta practica.
 Los voltajes obtenidos segun los parametros establecidos fueron los siguientes:
-|
-Punto | Vin (multímetro) | ADC | PCT | ALARM (THR=70) |
-|---|---|---|---|---|
-| ~0 % | 0 V | 0 a 3 | 0 | 0 |
-| ~50 % | 1,6 V | 2026 a 2083 | 49 a 51 | 0 |
-| ~100 % | 3,2 V | 4095 | 100 | 1 |
+
+|Punto | Vin (multímetro) |     ADC     |  PCT    | ALARM (THR=70) |
+| 0%   |       0 V        |    0 a 3    |   0     |      0         |
+| 50%  |      1,6 V       | 2026 a 2083 | 49 a 51 |      0         |
+| 100% |      3,2 V       |    4095     |  100    |      1         |
 
 
 Por ultimo en la prueba P10 
