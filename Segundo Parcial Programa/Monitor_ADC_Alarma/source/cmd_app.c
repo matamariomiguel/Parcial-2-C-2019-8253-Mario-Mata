@@ -1,6 +1,5 @@
 #include "cmd_app.h"
 #include "app_config.h"
-#include "app_time.h"
 #include "uart_app.h"
 #include "tick_app.h"
 #include "adc_app.h"
@@ -14,15 +13,6 @@ static char     s_buf[BUF_SZ];
 static uint32_t s_len      = 0U;
 static bool     s_overflow = false;
 static bool     s_lastCR   = false;     /* el byte anterior fue CR */
-static uint32_t s_lastRxMs = 0U;
-static bool     s_anyRx    = false;
-
-bool Cmd_TypingActive(uint32_t nowMs)
-{
-    (void)nowMs;
-    return (APP_TEST_QUIET_MS > 0U) && s_anyRx &&
-           (Time_Elapsed(Tick_GetMs(), s_lastRxMs) < APP_TEST_QUIET_MS);
-}
 
 void Cmd_SendStatus(void)
 {
@@ -127,7 +117,6 @@ void Cmd_Init(void)
     s_len      = 0U;
     s_overflow = false;
     s_lastCR   = false;
-    s_anyRx    = false;
 }
 
 void Cmd_Service(void)
@@ -141,9 +130,6 @@ void Cmd_Service(void)
 
     while (Uart_ReadByte(&b))
     {
-        s_lastRxMs = Tick_GetMs();
-        s_anyRx    = true;
-
 #if (APP_ACCEPT_CR_EOL == 1U)
         if (b == '\r')
         {

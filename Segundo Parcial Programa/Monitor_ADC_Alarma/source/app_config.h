@@ -58,8 +58,5 @@
  * Para probar a mano con un terminal que envia solo CR, ponerlo en 1U. */
 #define APP_ACCEPT_CR_EOL        0U
 
-/* Pruebas manuales: silencia la telemetria N ms despues de recibir un byte.
- * Debe estar en 0U en las pruebas P02 y P10 y en la entrega. */
-#define APP_TEST_QUIET_MS        10000U
 
 #endif
