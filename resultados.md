@@ -2,13 +2,13 @@
 
 | ID | Resultado esperado | Resultado observado | PASS/FAIL | Evidencia |
 |---|---|---|---|---|
-| P01 | | | | |
-| P02 | | | | |
-| P03 | | | | |
-| P04 | | | | |
-| P05 | | | | |
-| P06 | | | | |
-| P07 | | | | |
-| P08 | | | | |
-| P09 | | | | |
-| P10 | | | | |
+| P01 | Compila y arranca. MODE=RUN, THR=70, ALARM=0 y PCT cercano a 0 al enviar STATUS después de 200 ms. | Tras el reinicio, STATUS en t=13726: ADC=0, PCT=0, THR=70, MODE=RUN, ALARM=0. Otros STATUS (t=20340, 26019, 38986) también con PCT=0 y ALARM=0. | PASS | `P01.log` |
+| P02 | Adquisición cada 100 ms, LED cada 500 ms, telemetría cada 1000 ms, tolerancia ±5 %. | Telemetría: 32 líneas en 31,83 s de reloj del PC (−0,54 %), intervalos entre 0,97 y 1,02 s. Diagnóstico del firmware: ADC n=99, 100 ms exactos; LED n=20, 500 ms exactos. Nota: el diagnóstico usa el mismo CTIMER0, no es medición independiente. | PASS | `P02.log`, `P02 Mediciones del LED Y Muestreo del ADC`, `P10 sin realizar alteraciones.log` |
+| P03 | PCT = 100·Vin/VREF dentro de ±3 puntos en 0 %, 50 % y 100 %; ADC en rango de 12 bits; redondeo correcto. | 0 V → ADC 0 a 3, PCT 0, ALARM 0. 1,6 V → ADC 2026 a 2083, PCT 49 a 51, ALARM 0. 3,2 V → ADC 4095, PCT 100, ALARM 1. Redondeo verificado (ADC 2067 → 50; 2068 → 51). El punto de 100 % queda en el límite de ±3 con VREF 3,3 V (incertidumbre del multímetro ±0,05 V). | PASS (con nota) | `P03.log`, fotos del multímetro |
+| P04 | Con THR=70, ALARM = 0, 1, 1, 0 para PCT = 60, 72, 67, 62 (300 ms por nivel). | PCT=60 → ALARM=0. PCT=72 → ALARM=1. PCT=67 → ALARM=1 (conserva en la banda). PCT=62 → ALARM=0 (apagó al bajar de 65, en PCT=64). | PASS | `P04.log` |
+| P05 | Una alternancia por pulsación válida; sin repetición al mantener el botón; los rebotes no producen alternancias extra. | 12 pulsaciones registradas, alternando estrictamente PAUSE y RUN, sin repeticiones ni cambios dobles. MODE de la telemetría coincide con cada cambio. | PASS | `P05.log` |
+| P06 | En PAUSE la alarma permanece apagada; ADC, LED y telemetría continúan; START con PCT≈80 restaura RUN y enciende la alarma. | STOP → OK PAUSE en 16 ms. En PAUSE, con PCT entre 11 y 100, ALARM=0 siempre y la telemetría siguió cada segundo. START con PCT=80 → OK RUN y ALARM=1 en la siguiente telemetría. | PASS | `P06.log` |
+| P07 | Respuestas OK con el valor recibido; con THR 50 la alarma enciende; con THR 80 apaga; se aceptan 10 y 95. | Con PCT=60: THR 50 → OK THR=50, ALARM=1. THR 80 → OK THR=80, ALARM=0. THR 10 → OK THR=10, ALARM=1. THR 95 → OK THR=95, ALARM=0. | PASS | `P07.log` |
+| P08 | Un ERR por línea; umbral y modo sin cambios; la aplicación continúa. | THR 9, THR 96, THR abc, THR 50x, THR 50 extra y FOO dieron un ERR cada una. THR=70 y MODE=RUN sin cambios; la telemetría y STATUS siguieron funcionando. | PASS | `P08.log` |
+| P09 | Cada comando completo responde; la línea de 33 caracteres da ERR; el STATUS posterior funciona; no se ejecutan fragmentos descartados. | STATUS fragmentado en dos envíos → respuesta. Fragmentos con terminador (STA, TUS, US) → ERR sin ejecutar. 33 caracteres + LF → ERR y STATUS posterior responde. 33 caracteres + CRLF → ERR y STATUS posterior responde. Minúsculas → ERR. | PASS | `P09.log`, `P09 con LF.log`, `P09 con CRLF.log` |
+| P10 | Sin bloqueo ni líneas corruptas; respuestas ≤100 ms; periodos dentro de ±5 %; modo y alarma siguen las reglas. | Dos corridas de ≈30 s con STATUS cada ≈200 ms, variando el potenciómetro y alternando modo. Latencia de respuesta 15 a 31 ms. Telemetría: 29,85 s para 30 s (−0,51 %). Sin líneas corruptas ni bloqueos; alarma e histéresis correctas. | PASS | `P10 sin realizar alteraciones.log`, `P10 aleraciones mas bajas.log` |
