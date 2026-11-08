@@ -57,6 +57,7 @@
 /* Entrega final: solo LF o CRLF cierran una linea, como pide el enunciado.
  * Para probar a mano con un terminal que envia solo CR, ponerlo en 1U. */
 #define APP_ACCEPT_CR_EOL        0U
-
+/* Traza de diagnostico de tiempos (solo para la prueba P02). 0U en la entrega */
+#define APP_DIAG_TRACE           1U
 
 #endif

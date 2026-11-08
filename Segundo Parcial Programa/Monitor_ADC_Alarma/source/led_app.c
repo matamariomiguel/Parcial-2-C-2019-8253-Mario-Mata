@@ -4,6 +4,7 @@
 #include "fsl_gpio.h"
 #include "fsl_clock.h"
 #include "fsl_reset.h"
+#include "diag_app.h"
 
 static bool     s_actOn = false;
 static bool     s_almOn = false;
@@ -52,11 +53,12 @@ void Led_Init(uint32_t nowMs)
 
 void Led_ActivityService(uint32_t nowMs)
 {
-    if (Time_Due(nowMs, &s_actLast, APP_ACTIVITY_PERIOD_MS))
-    {
-        s_actOn = !s_actOn;
-        WriteAct(s_actOn);
-    }
+	if (Time_Due(nowMs, &s_actLast, APP_ACTIVITY_PERIOD_MS))
+	{
+	    s_actOn = !s_actOn;
+	    WriteAct(s_actOn);
+	    Diag_Led(nowMs);
+	}
 }
 
 void Led_SetAlarm(bool on)

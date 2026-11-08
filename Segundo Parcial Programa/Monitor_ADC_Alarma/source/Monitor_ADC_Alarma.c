@@ -13,6 +13,7 @@
 #include "adc_app.h"
 #include "alarm_app.h"
 #include "cmd_app.h"
+#include "diag_app.h"
 
 int main(void)
 {
@@ -30,6 +31,7 @@ int main(void)
     Adc_Init(t0);
     Alarm_Init();
     Cmd_Init();
+    Diag_Init(t0);
 
     uint32_t lastTelem = t0;
 
@@ -39,8 +41,9 @@ int main(void)
 
         Led_ActivityService(now);                       /* 500 ms */
 
-        if (Adc_Service(now))                           /* 100 ms */
+        if (Adc_Service(now))                   /* 100 ms */
         {
+            Diag_Adc(now);
             Alarm_OnSample(Adc_RawToPct(Adc_GetRaw()));
         }
 
@@ -50,6 +53,7 @@ int main(void)
         }
 
         Cmd_Service();
+        Diag_Service(now);
 
         if (Time_Due(now, &lastTelem, APP_TELEMETRY_PERIOD_MS))   /* 1000 ms */
         {
