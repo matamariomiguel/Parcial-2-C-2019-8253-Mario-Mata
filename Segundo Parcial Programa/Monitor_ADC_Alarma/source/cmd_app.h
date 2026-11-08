@@ -1,0 +1,10 @@
+#ifndef CMD_APP_H
+#define CMD_APP_H
+
+#include <stdint.h>
+
+void Cmd_Init(void);
+void Cmd_Service(void);        /* procesa bytes de RX sin bloquear (llamar en main) */
+void Cmd_SendStatus(void);     /* linea de estado: telemetria y STATUS */
+
+#endif
