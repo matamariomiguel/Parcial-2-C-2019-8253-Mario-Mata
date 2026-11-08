@@ -15,9 +15,11 @@ Ver `Documentos/mapa_pines.md`.
       extremo 1 ── 3V3 (header Arduino)
       cursor    ── J4 pin 2 (A0, P1_10, ADC1_A8)
       extremo 2 ── GND
-    Pulsador: SW2 integrado (P1_7), activo en bajo con pull-up
-    LED: RGB integrado (verde = actividad, rojo = alarma)
-    UART: USB del MCU-Link, LPUART0 (P0_2 RX, P0_3 TX), 115200 8N1
+   
+## Pulsador
+- SW2 integrado, pin P1_7 (GPIO1), activo en bajo con pull-up interno; la entrada nunca queda flotante.
+- Se lee por sondeo desde el bucle principal, sin retardos bloqueantes: un cambio de nivel reinicia una ventana de 30 ms, y solo si el nivel se mantiene estable ese tiempo se acepta.
+- Una pulsación válida alterna RUN y PAUSE una sola vez. Mantener el botón no repite la acción, porque la liberación también se valida antes de aceptar otra pulsación.
     
 ## ADC
 - Módulo: ADC1 (LPADC), canal 8 (pin P1_10), comando 1, disparo por software.
@@ -27,8 +29,12 @@ Ver `Documentos/mapa_pines.md`.
 - Conversión: PCT = (100 × ADC + 2047) / 4095, en enteros de 32 bits.
 - Entrada: potenciómetro de 10 kΩ con un extremo a 3V3, el otro a GND y el cursor a J4 pin 2.
 
-## Conexion UART
-conexion de 115200 baudios, a 8 bits, sin paridad, de 1 bit de parada, sin control de flujo.
+## UART
+- LPUART0 (P0_2 RX, P0_3 TX) a 115200 baudios, 8 bits, sin paridad, 1 bit de parada y sin control de flujo, por el puerto serial virtual del MCU-Link.
+- Recepción por interrupción: la ISR solo guarda el byte en un búfer circular de 256 bytes y cuenta los errores; las líneas se procesan fuera de la interrupción.
+- Transmisión no bloqueante: cola de 1024 bytes que el bucle principal vacía poco a poco.
+- Líneas de hasta 32 caracteres terminadas en LF o CRLF. Una línea más larga se descarta completa, responde ERR y permite procesar la siguiente.
+- Comandos (distinguen mayúsculas): STATUS, THR n (10 a 95), START, STOP. Cualquier otro texto responde ERR.
 
 ## Cálculo del TIMER
 - Periférico: CTIMER0, coincidencia (match) 0 con reinicio del contador e interrupción.
