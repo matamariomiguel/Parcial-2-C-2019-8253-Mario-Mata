@@ -44,10 +44,32 @@ Ver `Documentos/mapa_pines.md`.
 - La interrupción solo incrementa un contador de milisegundos. De ese tick salen las tareas periódicas: muestra del ADC cada 100 ms, LED de actividad cada 500 ms y telemetría cada 1000 ms.
 - Las diferencias de tiempo se calculan con enteros sin signo, así que resisten el desbordamiento del contador.
 
-## Compilación y ejecución
-1. Abrir el proyecto en MCUXpresso IDE.
-2. Compilar en Debug y cargar con la sonda MCU-Link.
-3. Abrir la terminal serial a 115200 8N1.
+## LEDs
+- LED de actividad: LED externo en P2_5 (Arduino A1, J4 pin 4) con resistencia limitadora, activo en alto. Alterna cada 500 ms.
+- LED de alarma: LED rojo del RGB integrado (P3_12), activo en bajo. Lo gobierna la lógica de alarma.
+
+## Configuración eléctrica de entradas
+- ADC: P1_10 en función analógica (MUX 0), sin buffer digital de entrada.
+- SW2: P1_7 en GPIO con pull-up interno y buffer de entrada habilitado.
+- UART RX: P0_2 en función alterna 2 con pull-up.
+
+## VREF y rango de entrada
+- VREF = VDDA = 3,3 V nominales; medido en el pin 3V3: __ V (completar).
+- Rango de entrada: 0 a VREF. El potenciómetro va de GND a 3V3.
+- Medidas P03: 0 V, 1,6 V y 3,2 V (multímetro, resolución 0,1 V, incertidumbre ±0,05 V).
+
+## Alarma
+- En RUN: ALARM=1 si PCT ≥ THR; ALARM=0 si PCT < THR − 5; en la banda intermedia conserva el estado.
+- En PAUSE la alarma queda apagada. Al volver a RUN, o al cambiar THR en RUN, se reevalúa con la última muestra.
+
+## Formato de telemetría y STATUS
+t=1200;ADC=2866;PCT=70;THR=70;MODE=RUN;ALARM=1
+Cada línea termina en CRLF. Respuestas: OK THR=n, OK RUN, OK PAUSE, ERR.
+
+## Parámetros de compilación (app_config.h)
+- APP_ACCEPT_CR_EOL = 0U: solo LF o CRLF cierran línea (versión de entrega).
+- APP_DIAG_TRACE = 0U: con 1U imprime líneas DIAG ADC y DIAG LED con los intervalos medidos entre eventos; se usó para la evidencia de 100 ms y 500 ms.
+
 
 ## Resultados de pruebas
 Ver `resultados.md` y la carpeta `evidencias/`.
