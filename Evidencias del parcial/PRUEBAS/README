@@ -1,0 +1,22 @@
+Maestro en este apartado le resumo cada una de las pruebas hechas sobre el firmware y los archivos que las respaldan. 
+Cómo se tomaron las evidencias?
+
+Para lo que fueron las pruebas P01, P02 y P04 a P09: logs con marca de tiempo de Tera Term, por el puerto COM5 a 115200 8N1.
+Con la configuración de la terminal: recepción CR, eco local activado.
+para la transmisión CR+LF en la mayoría de las pruebas y LF especialmente en la prueba "P09 con LF" se abjunto capturas como evidencia. llamadas (capturas P09_Pruebas_del_terminal*.png).
+
+Cabe destacaer que comoo el eco local se mezcla con la telemetría, algunas líneas aparecen cortadas (por ejemplo STAt=6000;...). Es un efecto del terminal, no del firmware.
+
+Con el caso de la prueba P03
+
+Se le abjunto fotos fotos de la medición del LED externo y el potenciometro. Cada medicion se uso un multimetro como heramienta para medir la tension de cada compoente usado para esta practica.
+
+Por ultimo en la prueba P10 
+
+NO se ralizo mediante Tera Term, sino que se realizo un script de PowerShell con la funcion de enviar comandos a las horas fijas y donde registrara cada línea TX/RX con su tiempo aqui le abjunte 3 logs como evidencia de la misma prueba donde tiene alteracionas mas ramdoms, alteraciones controladas y sin hacer alguna alteracion excesiva.
+Detallo de que cada línea del log empieza con los milisegundos desde el inicio de la prueba, medidos con el reloj de la pc que utilice.
+
+Ya con el script que se uso envía un STATUS cada 200 ms siendo el totla requerido de (150 en total), y un STOP o START cada 25 STATUS (a ~4,8 s, ~9,8 s, ~14,8 s, ~19,8 s, ~24,8 s y ~29,8 s).
+
+
+
