@@ -12,17 +12,7 @@
 #include "button_app.h"
 #include "adc_app.h"
 #include "alarm_app.h"
-
-static void SendStatus(uint32_t now)
-{
-    Uart_Printf("t=%lu;ADC=%u;PCT=%u;THR=%u;MODE=%s;ALARM=%u\r\n",
-                (unsigned long)now,
-                (unsigned)Adc_GetRaw(),
-                (unsigned)Adc_RawToPct(Adc_GetRaw()),
-                (unsigned)Alarm_GetThr(),
-                Alarm_IsRun() ? "RUN" : "PAUSE",
-                Alarm_IsOn() ? 1U : 0U);
-}
+#include "cmd_app.h"
 
 int main(void)
 {
@@ -39,18 +29,17 @@ int main(void)
     Button_Init(t0);
     Adc_Init(t0);
     Alarm_Init();
+    Cmd_Init();
 
     uint32_t lastTelem = t0;
-    Uart_Puts("\r\nETAPA 8-9: ADC + alarma. SW2=RUN/PAUSE, 'u'/'d' = THR +5/-5\r\n");
 
     for (;;)
     {
         uint32_t now = Tick_GetMs();
-        uint8_t b;
 
-        Led_ActivityService(now);
+        Led_ActivityService(now);                       /* 500 ms */
 
-        if (Adc_Service(now))
+        if (Adc_Service(now))                           /* 100 ms */
         {
             Alarm_OnSample(Adc_RawToPct(Adc_GetRaw()));
         }
@@ -60,17 +49,13 @@ int main(void)
             Alarm_SetRun(!Alarm_IsRun());
         }
 
-        while (Uart_ReadByte(&b))
+        Cmd_Service();
+
+        if (Time_Due(now, &lastTelem, APP_TELEMETRY_PERIOD_MS))   /* 1000 ms */
         {
-            uint8_t thr = Alarm_GetThr();
-            if ((b == 'u') && (thr + 5U <= APP_THR_MAX)) { Alarm_SetThr((uint8_t)(thr + 5U)); }
-            if ((b == 'd') && (thr >= APP_THR_MIN + 5U)) { Alarm_SetThr((uint8_t)(thr - 5U)); }
+            Cmd_SendStatus();
         }
 
-        if (Time_Due(now, &lastTelem, APP_TELEMETRY_PERIOD_MS))
-        {
-            SendStatus(now);
-        }
         Uart_TxService();
     }
 }
