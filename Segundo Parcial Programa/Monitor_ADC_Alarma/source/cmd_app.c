@@ -19,8 +19,9 @@ static bool     s_anyRx    = false;
 
 bool Cmd_TypingActive(uint32_t nowMs)
 {
+    (void)nowMs;
     return (APP_TEST_QUIET_MS > 0U) && s_anyRx &&
-           (Time_Elapsed(nowMs, s_lastRxMs) < APP_TEST_QUIET_MS);
+           (Time_Elapsed(Tick_GetMs(), s_lastRxMs) < APP_TEST_QUIET_MS);
 }
 
 void Cmd_SendStatus(void)

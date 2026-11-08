@@ -21,11 +21,17 @@ void Adc_Init(uint32_t nowMs)
     RESET_ReleasePeripheralReset(kPORT1_RST_SHIFT_RSTn);
     APP_ADC_PORT->PCR[APP_ADC_PIN] = PORT_PCR_MUX(0U);
 
-    /* Reloj funcional del ADC1 */
+    /* Reloj funcional del ADC1: FRO 12 MHz, divisor 1 (igual que el ejemplo lpadc_polling) */
+    RESET_ReleasePeripheralReset(kADC1_RST_SHIFT_RSTn);
     CLOCK_SetClockDiv(kCLOCK_DivADC1, 1U);
-    CLOCK_AttachClk(kFRO_HF_to_ADC1);
+    CLOCK_AttachClk(kFRO12M_to_ADC1);
 
     LPADC_GetDefaultConfig(&cfg);
+#if defined(FSL_FEATURE_LPADC_HAS_CFG_PWRSEL) && (FSL_FEATURE_LPADC_HAS_CFG_PWRSEL == 1U)
+    cfg.powerLevelMode = kLPADC_PowerLevelAlt4;
+#endif
+    cfg.enableAnalogPreliminary = true;
+    cfg.referenceVoltageSource  = kLPADC_ReferenceVoltageAlt3;   /* VDDA */
     LPADC_Init(APP_ADC_BASE, &cfg);
     LPADC_DoAutoCalibration(APP_ADC_BASE);
 

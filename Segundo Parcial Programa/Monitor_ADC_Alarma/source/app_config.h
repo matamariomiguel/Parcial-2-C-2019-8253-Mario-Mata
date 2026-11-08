@@ -18,12 +18,10 @@
 #define APP_LED_ALM_ON_LEVEL   LOGIC_LED_ON
 #define APP_LED_ALM_OFF_LEVEL  LOGIC_LED_OFF
 
-/* ===== Pulsador SW2: activo en bajo, pull-up ===== */
+/* ===== Pulsador SW2: activo en bajo, pull-up. Se lee por sondeo con antirrebote de 30 ms ===== */
 #define APP_BTN_GPIO          GPIO1
 #define APP_BTN_PORT          PORT1
 #define APP_BTN_PIN           7U
-#define APP_BTN_IRQn          GPIO1_IRQn
-#define APP_BTN_IRQHandler    GPIO1_IRQHandler
 
 /* ===== UART de la consola (MCU-Link): P0_2 RX, P0_3 TX ===== */
 #define APP_UART              LPUART0
@@ -56,12 +54,12 @@
 #define APP_HYSTERESIS           5U
 #define APP_LINE_MAX             32U
 
-/* 1 = Enter de PuTTY (solo CR) tambien cierra la linea. LF y CRLF siguen valiendo.
- * 0 = solo LF o CRLF, estrictamente como pide el enunciado. */
-#define APP_ACCEPT_CR_EOL        1U
+/* Entrega final: solo LF o CRLF cierran una linea, como pide el enunciado.
+ * Para probar a mano con un terminal que envia solo CR, ponerlo en 1U. */
+#define APP_ACCEPT_CR_EOL        0U
 
-/* Pruebas manuales: silencia la telemetria N ms despues de recibir un byte,
- * para poder escribir en PuTTY. Poner 0U en las pruebas P02 y P10 y en la entrega. */
-#define APP_TEST_QUIET_MS        3000U
+/* Pruebas manuales: silencia la telemetria N ms despues de recibir un byte.
+ * Debe estar en 0U en las pruebas P02 y P10 y en la entrega. */
+#define APP_TEST_QUIET_MS        10000U
 
 #endif
