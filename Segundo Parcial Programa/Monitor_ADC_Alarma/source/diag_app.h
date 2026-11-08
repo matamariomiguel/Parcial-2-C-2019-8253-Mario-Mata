@@ -15,11 +15,15 @@ void Diag_Init(uint32_t nowMs);
 void Diag_Adc(uint32_t nowMs);       /* llamar con cada muestra ADC nueva */
 void Diag_Led(uint32_t nowMs);       /* llamar en cada cambio del LED de actividad */
 void Diag_Service(uint32_t nowMs);   /* llamar en el lazo principal */
+void Diag_Btn(uint32_t nowMs, bool run);   /* una linea por pulsacion valida */
+
 #else
 #define Diag_Init(t)     ((void)(t))
 #define Diag_Adc(t)      ((void)(t))
 #define Diag_Led(t)      ((void)(t))
 #define Diag_Service(t)  ((void)(t))
+#define Diag_Btn(t, r)   ((void)(t), (void)(r))
+
 #endif
 
 #endif

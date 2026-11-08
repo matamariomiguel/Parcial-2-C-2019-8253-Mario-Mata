@@ -50,6 +50,7 @@ int main(void)
         if (Button_Service(now))
         {
             Alarm_SetRun(!Alarm_IsRun());
+            Diag_Btn(now, Alarm_IsRun());
         }
 
         Cmd_Service();

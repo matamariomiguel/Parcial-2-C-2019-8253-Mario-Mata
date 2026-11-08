@@ -78,4 +78,9 @@ void Diag_Service(uint32_t nowMs)
     }
 }
 
+void Diag_Btn(uint32_t nowMs, bool run)
+{
+    Uart_Printf("DIAG BTN;t=%lu;MODE=%s\r\n",
+                (unsigned long)nowMs, run ? "RUN" : "PAUSE");
+}
 #endif /* APP_DIAG_TRACE */
