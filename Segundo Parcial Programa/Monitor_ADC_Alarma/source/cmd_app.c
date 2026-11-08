@@ -1,17 +1,27 @@
 #include "cmd_app.h"
 #include "app_config.h"
+#include "app_time.h"
 #include "uart_app.h"
 #include "tick_app.h"
 #include "adc_app.h"
 #include "alarm_app.h"
 #include <string.h>
 
-/* Se guardan hasta 33 bytes (32 de linea + un posible CR del CRLF) y 1 para el NUL */
+/* Hasta 33 bytes (32 de linea + un posible CR) y 1 para el NUL */
 #define BUF_SZ  (APP_LINE_MAX + 2U)
 
 static char     s_buf[BUF_SZ];
 static uint32_t s_len      = 0U;
 static bool     s_overflow = false;
+static bool     s_lastCR   = false;     /* el byte anterior fue CR */
+static uint32_t s_lastRxMs = 0U;
+static bool     s_anyRx    = false;
+
+bool Cmd_TypingActive(uint32_t nowMs)
+{
+    return (APP_TEST_QUIET_MS > 0U) && s_anyRx &&
+           (Time_Elapsed(nowMs, s_lastRxMs) < APP_TEST_QUIET_MS);
+}
 
 void Cmd_SendStatus(void)
 {
@@ -25,7 +35,7 @@ void Cmd_SendStatus(void)
                 Alarm_IsOn() ? 1U : 0U);
 }
 
-/* Devuelve true y el valor si 's' son 1 a 3 digitos decimales y nada mas */
+/* true y el valor si 's' son 1 a 3 digitos decimales y nada mas */
 static bool ParseUInt(const char *s, uint32_t *out)
 {
     uint32_t v = 0U;
@@ -84,7 +94,7 @@ static void EndOfLine(void)
         }
         if (s_len > APP_LINE_MAX)
         {
-            bad = true;                     /* 33 caracteres sin CR */
+            bad = true;                     /* mas de 32 caracteres */
         }
     }
 
@@ -115,6 +125,8 @@ void Cmd_Init(void)
 {
     s_len      = 0U;
     s_overflow = false;
+    s_lastCR   = false;
+    s_anyRx    = false;
 }
 
 void Cmd_Service(void)
@@ -128,6 +140,23 @@ void Cmd_Service(void)
 
     while (Uart_ReadByte(&b))
     {
+        s_lastRxMs = Tick_GetMs();
+        s_anyRx    = true;
+
+#if (APP_ACCEPT_CR_EOL == 1U)
+        if (b == '\r')
+        {
+            s_lastCR = true;
+            EndOfLine();                    /* CR cierra la linea (Enter de PuTTY) */
+            continue;
+        }
+        if ((b == '\n') && s_lastCR)
+        {
+            s_lastCR = false;               /* LF de un CRLF: ya se proceso con el CR */
+            continue;
+        }
+        s_lastCR = false;
+#endif
         if (b == '\n')
         {
             EndOfLine();
@@ -140,7 +169,7 @@ void Cmd_Service(void)
             }
             else
             {
-                s_overflow = true;          /* demasiado larga: descarta hasta LF */
+                s_overflow = true;          /* demasiado larga: descarta hasta el terminador */
             }
         }
     }

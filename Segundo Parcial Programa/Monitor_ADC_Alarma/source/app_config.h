@@ -56,4 +56,12 @@
 #define APP_HYSTERESIS           5U
 #define APP_LINE_MAX             32U
 
+/* 1 = Enter de PuTTY (solo CR) tambien cierra la linea. LF y CRLF siguen valiendo.
+ * 0 = solo LF o CRLF, estrictamente como pide el enunciado. */
+#define APP_ACCEPT_CR_EOL        1U
+
+/* Pruebas manuales: silencia la telemetria N ms despues de recibir un byte,
+ * para poder escribir en PuTTY. Poner 0U en las pruebas P02 y P10 y en la entrega. */
+#define APP_TEST_QUIET_MS        3000U
+
 #endif

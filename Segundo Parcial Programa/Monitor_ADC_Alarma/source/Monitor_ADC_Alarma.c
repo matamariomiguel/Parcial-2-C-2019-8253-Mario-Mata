@@ -53,7 +53,10 @@ int main(void)
 
         if (Time_Due(now, &lastTelem, APP_TELEMETRY_PERIOD_MS))   /* 1000 ms */
         {
-            Cmd_SendStatus();
+            if (!Cmd_TypingActive(now))
+            {
+                Cmd_SendStatus();
+            }
         }
 
         Uart_TxService();
