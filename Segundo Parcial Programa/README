@@ -25,4 +25,3 @@ cmd_app.c/.h: interpreta comandos UART y genera respuestas y telemetría.
 diag_app.c/.h: mide los períodos de ejecución de las tareas para diagnóstico.
 
 semihost_hardfault.c: evita bloqueos por semihosting cuando no hay depurador.
-
